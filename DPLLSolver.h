@@ -28,17 +28,10 @@ private:
     Status transform_clauses(Formula&,int literal);
 public:
     DPLLSolver(Formula&);
+    Formula get_current();
     ~DPLLSolver();
     Status process();
 };
-
-DPLLSolver::DPLLSolver(Formula& formula):current_node(formula)
-{
-}
-
-DPLLSolver::~DPLLSolver()
-{
-}
 
 
 #endif

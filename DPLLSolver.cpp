@@ -3,6 +3,19 @@
 #include "DPLLSolver.h"
 using namespace std;
 
+
+DPLLSolver::DPLLSolver(Formula& formula):current_node(formula)
+{
+}
+
+DPLLSolver::~DPLLSolver()
+{
+}
+
+Formula DPLLSolver::get_current(){
+    return current_node;
+}
+
 Status DPLLSolver::process(){
     Status status = preprocess();
     if(status != UNKNOWN)return status;
@@ -58,7 +71,7 @@ Status DPLLSolver::transform_clauses(Formula &formula,int literal){
                 i--;
                 if(formula.clauses.size()==0)return SATISFIABLE;
                 break;
-            }else{
+            }else if(literal==formula.clauses[i][j]/2){
                 formula.clauses[i].erase(formula.clauses[i].begin()+j);
                 j--;
                 if(formula.clauses[i].size()==0)return UNSATISFIABLE;
@@ -79,6 +92,7 @@ int DPLLSolver::decide_next_branch(){
     int i = distance(current_node.literal_frequency.begin(),
     max_element(current_node.literal_frequency.begin(),current_node.literal_frequency.end()));
     current_node.literals[i] = 1;
+    current_node.literal_frequency[i] = -1;
     fstack.push(current_node);
     current_node.literals[i]=0;
     return i;
@@ -93,6 +107,7 @@ Status DPLLSolver::deduce(int literal){
 }
 
 int DPLLSolver::analyze_conflict(){
+    if(fstack.size()==1)return 0;
     return 1;
 }
 

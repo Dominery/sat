@@ -1,9 +1,9 @@
-
+#include<fstream>
+#include<string>
+#include<stdexcept>
 
 #ifndef PARSER_H
 #define PARSER_H
-#include<fstream>
-#include<string>
 
 
 #include"formula.h"
@@ -18,5 +18,14 @@ public:
     CnfFileParser(std::string);
     ~CnfFileParser();
     Formula parse(); // parse the cnf file data to Formula struct
+};
+
+class IOException:public std::runtime_error { //if can not read data from file correctly throw the exception
+    private:
+    std::string info;
+    public:
+    IOException(std::string s,std::string info);
+    const char* what();
+    ~IOException(){};
 };
 #endif

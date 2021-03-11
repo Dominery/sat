@@ -1,6 +1,6 @@
 #include<iostream>
 #include<fstream>
-#include<exception>
+#include<stdexcept>
 #include<string>
 #include<vector>
 
@@ -9,14 +9,7 @@
 
 using namespace std;
 
-class IOException:public runtime_error{ //if can not read data from file correctly throw the exception
-    private:
-    string info;
-    public:
-    IOException(string s,string info);
-    const char* what();
-    ~IOException(){};
-};
+
 IOException::IOException(string s,string info):runtime_error(s){
     this->info = info;
 }
@@ -93,20 +86,3 @@ Formula CnfFileParser::parse(){
     return Formula(clauses,literal_frequency,literals);
 }
 
-int main(int argc, char const *argv[])
-{
-    Formula formula;
-    try{
-        formula = CnfFileParser("sat-20.cnf").parse();
-        for(auto cl:formula.clauses){
-            for(auto value:cl){
-                cout<<DECODE(value);
-                cout<<"\t";
-            }
-            cout<<endl;
-        }
-    }catch(IOException &e){
-        cout<<e.what()<<endl;
-    }
-    return 0;
-}
