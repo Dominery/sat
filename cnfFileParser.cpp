@@ -63,13 +63,16 @@ clause CnfFileParser::parseline(vector<int> &literal_frequency){
     fin>>value;
     clause cl;
     while(value != 0){ // encode the liberal if don't meet 0
-        if(value>0){
-            cl.push_back(2*(value-1)); // encode all positive liberal as even start at 0
-            literal_frequency[value-1]++; 
-        }else{
-            cl.push_back(2*(-1*value)-1); // encode all negative liberal as obb start at 1
-            literal_frequency[-value-1]++;
-        }
+        // if(value>0){
+        //     cl.push_back(2*(value-1)); // encode all positive liberal as even start at 0
+        //     literal_frequency[value-1]++; 
+        // }else{
+        //     cl.push_back(2*(-1*value)-1); // encode all negative liberal as obb start at 1
+        //     literal_frequency[-value-1]++;
+        // }
+        value = ENCODE(value);
+        cl.push_back(value);
+        literal_frequency[value/2]++;
         fin >> value;
     }
     return cl;
@@ -97,11 +100,7 @@ int main(int argc, char const *argv[])
         formula = CnfFileParser("sat-20.cnf").parse();
         for(auto cl:formula.clauses){
             for(auto value:cl){
-                if(value%2){
-                    cout<<(value+1)/2*(-1);
-                }else{
-                    cout<<value/2+1;
-                }
+                cout<<DECODE(value);
                 cout<<"\t";
             }
             cout<<endl;

@@ -3,6 +3,12 @@
 #define FORMULA_H
 typedef std::vector<int> clause;
 
+// encode positive literals as even, negative literals as odd
+// if the literal is true, the encoded number of its positive  can be divide by 2 exactly
+// while the negative can't 
+#define ENCODE(x) (x>0?(x-1)*2:-2*x-1) 
+#define DECODE(x) (x%2?(x+1)/2*(-1):x/2+1)
+
 struct Formula{
     // a vector that stores the value assigned to each variable, where
     // -1 unassigned
