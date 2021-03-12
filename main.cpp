@@ -20,8 +20,11 @@ int main(int argc, char const *argv[])
         //     }
         //     cout<<endl;
         // }
-        for(auto i:solver.get_current().literals){
-            cout<<i<<"\t";
+        
+        // cout<<status<<endl;
+        for(int i=0;i<solver.get_current().literals.size();i++){
+            int value = solver.get_current().literals[i]?-(i+1):i+1;
+            cout<<value<<"\t";
         }
         cout<<endl;
     }catch(IOException &e){

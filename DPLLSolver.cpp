@@ -1,5 +1,6 @@
 #include<vector>
 #include<algorithm>
+#include<iostream>
 #include "DPLLSolver.h"
 using namespace std;
 
@@ -21,10 +22,10 @@ Status DPLLSolver::process(){
     if(status != UNKNOWN)return status;
     while (1)
     {
-        int literal = decide_next_branch();
+        decide_next_branch(); 
         while (true)
         {
-            status = deduce(literal);
+            status = deduce();
             if(status == CONFLICT){
                 int level = analyze_conflict();
                 if(level==0)return UNSATISFIABLE;
@@ -39,7 +40,7 @@ Status DPLLSolver::process(){
 }
 
 Status DPLLSolver::single_clause(Formula& formula){
-    if(formula.clauses.size()==0)return SATISFIABLE;
+    if(formula.clauses.empty())return SATISFIABLE;
     // single_found will be true until the formula doesn't have single clauses
     bool single_found = true;
     while (single_found)
@@ -55,6 +56,8 @@ Status DPLLSolver::single_clause(Formula& formula){
                 Status status = transform_clauses(formula,literal/2);
                 if (status==UNKNOWN)break;
                 else return status;
+            }else if(formula.clauses[i].empty()){
+                return UNSATISFIABLE;
             }
         }
     }
@@ -69,12 +72,13 @@ Status DPLLSolver::transform_clauses(Formula &formula,int literal){
             if(2*literal+value_of_literal==formula.clauses[i][j]){
                 formula.clauses.erase(formula.clauses.begin()+i);
                 i--;
-                if(formula.clauses.size()==0)return SATISFIABLE;
+                if(formula.clauses.empty())return SATISFIABLE;
                 break;
             }else if(literal==formula.clauses[i][j]/2){
                 formula.clauses[i].erase(formula.clauses[i].begin()+j);
                 j--;
-                if(formula.clauses[i].size()==0)return UNSATISFIABLE;
+                if(formula.clauses[i].empty())return UNSATISFIABLE;
+                break;
             }
         }
     }
@@ -83,23 +87,30 @@ Status DPLLSolver::transform_clauses(Formula &formula,int literal){
 
 Status DPLLSolver::preprocess(){
     Status status = single_clause(current_node);
-    fstack.push(current_node);
     return status;
 }
 
-int DPLLSolver::decide_next_branch(){
+void DPLLSolver::decide_next_branch(){
     //find the literal with maximum frequency in current formula
     int i = distance(current_node.literal_frequency.begin(),
     max_element(current_node.literal_frequency.begin(),current_node.literal_frequency.end()));
-    current_node.literals[i] = 1;
     current_node.literal_frequency[i] = -1;
-    fstack.push(current_node);
-    current_node.literals[i]=0;
-    return i;
-}
 
-Status DPLLSolver::deduce(int literal){
-    Status status = transform_clauses(current_node,literal);
+    lstack.push(i);
+    current_literal_choice = i;
+
+    int value = current_node.literal_polarity[i]>0?0:1;
+    current_node.literals[i] = (value+1)%2;
+    fstack.push(current_node);
+    current_node.literals[i]=value;
+}
+// deduce will judge the influence of the current branch
+// return value:
+//      SATISFIABLE if the formula are completed
+//      CONFLICT if the clauses in formula have conflict
+//      UNKNOWN can't deduce the result above 
+Status DPLLSolver::deduce(){
+    Status status = transform_clauses(current_node,current_literal_choice);
     if (status==UNSATISFIABLE)return CONFLICT;
     status = single_clause(current_node);
     if(status == UNSATISFIABLE)return CONFLICT;
@@ -107,13 +118,16 @@ Status DPLLSolver::deduce(int literal){
 }
 
 int DPLLSolver::analyze_conflict(){
-    if(fstack.size()==1)return 0;
+    if(fstack.empty())return 0;
     return 1;
 }
 
 void DPLLSolver::backtrack(int level){
+
     for(int i=0;i<level;i++){
         current_node = fstack.top();
         fstack.pop();
+        current_literal_choice = lstack.top();
+        lstack.pop();
     }
 }
