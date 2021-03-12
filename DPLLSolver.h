@@ -3,7 +3,7 @@
 #ifndef DPLL_PROCESSOR_H
 #define DPLL_PROCESSOR_H
 
-enum Status{UNKNOWN=2,SATISFIABLE=1,UNSATISFIABLE=0,CONFLICT};
+enum Status{UNKNOWN=2,SATISFIABLE=1,UNSATISFIABLE=0,CONFLICT=3}; // before bug occurred because the CONFLICT is not assigned, so it equals to SATISFIABLE
 
 class DPLLSolver
 {
@@ -11,14 +11,18 @@ private:
     // stack contain all state of formula 
     // which can help for backtrack
     std::stack<Formula> fstack; 
+    // store each choice
+    std::stack<int> lstack;
     // current_node is the current formula 
     Formula current_node;
+
+    int current_literal_choice;
     // preprocess the formula and then push it to fstack
     Status preprocess();
     // change the current formula
-    int decide_next_branch();
+    void decide_next_branch();
     // decrease the clauses in formula using rule
-    Status deduce(int);
+    Status deduce();
     // return where the fstack don't have conflicts
     int analyze_conflict();
     // pop the formula of fstack and change the current formula

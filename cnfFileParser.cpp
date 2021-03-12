@@ -51,7 +51,7 @@ void CnfFileParser::move_to_start(){
     }
 }
 
-clause CnfFileParser::parseline(vector<int> &literal_frequency){
+clause CnfFileParser::parseline(vector<int> &literal_frequency,int*literal_polarity){
     int value;
     fin>>value;
     clause cl;
@@ -66,6 +66,7 @@ clause CnfFileParser::parseline(vector<int> &literal_frequency){
         value = ENCODE(value);
         cl.push_back(value);
         literal_frequency[value/2]++;
+        value%2?literal_polarity[value/2]--:literal_polarity[value/2]++;
         fin >> value;
     }
     return cl;
@@ -79,10 +80,16 @@ Formula CnfFileParser::parse(){
     vector<clause> clauses;
     vector<int> literals(var,-1); 
     vector<int> literal_frequency(var,0);
+    int *literal_polarity = new int[var];
+    for(int i=0;i<var;i++){
+        literal_polarity[i]=0;
+    }
 
     for(int i=0;i<num;i++){
-        clauses.push_back(parseline(literal_frequency));
+        clauses.push_back(parseline(literal_frequency,literal_polarity));
     }
-    return Formula(clauses,literal_frequency,literals);
+    Formula formula(clauses,literal_frequency,literals);
+    formula.literal_polarity = literal_polarity;
+    return formula;
 }
 

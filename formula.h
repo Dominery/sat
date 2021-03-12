@@ -16,6 +16,7 @@ struct Formula{
     // 1 false
     std::vector<int> literals;
     std::vector<int> literal_frequency;
+    int *literal_polarity;
     std::vector<clause> clauses;
     Formula(std::vector<clause> &cl,std::vector<int>&lit_f,std::vector<int>&lit):literals(lit),clauses(cl),literal_frequency(lit_f){}
     Formula(){};
@@ -23,6 +24,7 @@ struct Formula{
         literals = formula.literals;
         clauses = formula.clauses;
         literal_frequency = formula.literal_frequency;
+        literal_polarity = formula.literal_polarity;
     }
 };
 

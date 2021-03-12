@@ -13,7 +13,7 @@ class CnfFileParser
 private:
     std::ifstream fin;
     void move_to_start(); // read the comments of cnf file if meet the unsupported syntax throw IOException
-    clause parseline(std::vector<int>&);
+    clause parseline(std::vector<int>&,int[]);
 public:
     CnfFileParser(std::string);
     ~CnfFileParser();
