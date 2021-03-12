@@ -26,6 +26,9 @@ struct Formula{
         literal_frequency = formula.literal_frequency;
         literal_polarity = formula.literal_polarity;
     }
+    bool not_init(){
+        return clauses.empty();
+    }
 };
 
 #endif

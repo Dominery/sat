@@ -32,6 +32,10 @@ private:
     Status transform_clauses(Formula&,int literal);
 public:
     DPLLSolver(Formula&);
+    DPLLSolver(){};
+    DPLLSolver(const DPLLSolver &solver){
+        current_node = solver.current_node;
+    }
     Formula get_current();
     ~DPLLSolver();
     Status process();
