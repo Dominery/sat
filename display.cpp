@@ -1,5 +1,6 @@
 #include <iostream>
 #include <windows.h>
+#include <string>
 
 #include "display.h"
 #include "formula.h"
@@ -12,17 +13,21 @@ void Display::show_sat(){
     cout<<"\tSAT Solver"<<endl;
     cout<<"1.read file\t2.show formula"<<endl;
     cout<<"3.solve the formula \t4.show result"<<endl;
+    cout<<"5.exit"<<endl;
 }
 
 int Display::get_command(){
     int command =-1;
     try
     {
-        cin>>command;
+        string input;
+        cin>>input;
+        command = stoi(input);
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << "please input number" << '\n';
+        command = -1;
     }
     return command;
     
@@ -51,13 +56,13 @@ void Display::run(){
             {
                 std::cerr << e.what() << '\n';
             }
-            
+            system("pause");
             break;
-        if(formula.not_init()){
+        case 2:
+                if(formula.not_init()){
             cout<<"please input file first";
             break;
         }
-        case 2:
             for(auto clause:formula.clauses){
                 for(auto literal:clause){
                     cout<<DECODE(literal);
@@ -67,6 +72,10 @@ void Display::run(){
             system("pause");
         break;
         case 3:
+                if(formula.not_init()){
+            cout<<"please input file first";
+            break;
+            }
             solver = DPLLSolver(formula);
             status = solver.process();
             break;
@@ -90,7 +99,12 @@ void Display::run(){
             }
             system("pause");
             break;
+
+        case 5:
+            running = false;
+            break;
         default:
+            system("pause");
             break;
         }
     }
