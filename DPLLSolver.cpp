@@ -13,10 +13,6 @@ DPLLSolver::~DPLLSolver()
 {
 }
 
-Formula DPLLSolver::get_current(){
-    return current_node;
-}
-
 Status DPLLSolver::process(){
     Status status = preprocess();
     if(status != UNKNOWN)return status;
@@ -37,6 +33,20 @@ Status DPLLSolver::process(){
         
     }
     
+}
+
+SolveResult DPLLSolver::get_result(){
+    clock_t start = clock();
+    Status status = process();
+    clock_t end = clock();
+    vector<int> results;
+    if(status==SATISFIABLE){
+        for(int i=0;i<current_node.literals.size();i++){
+            int value = current_node.literals[i]?-(i+1):i+1;
+            results.push_back(value);
+        }
+    }
+    return SolveResult(status,results,end-start);
 }
 
 Status DPLLSolver::single_clause(Formula& formula){

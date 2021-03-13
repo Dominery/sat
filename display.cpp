@@ -33,73 +33,87 @@ int Display::get_command(){
     
 }
 
+void Display::parse_file(Formula& formula){
+    string filename;
+    cout<<"please input file path"<<endl;
+    cin>>filename;
+    try
+    {
+        formula = CnfFileParser(filename).parse();
+    }
+    catch(IOException& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    system("pause");
+}
+
+void Display::show_formula(Formula&formula){
+    if(formula.not_init()){
+        cout<<"please input file first"<<endl;
+    }else{
+        for(auto clause:formula.clauses){
+            for(auto literal:clause){
+                cout<<DECODE(literal);
+            }
+            cout<<endl;
+        }
+    }
+    system("pause");
+}
+SolveResult Display::process_formula(Formula&formula){
+    SolveResult result;
+    if(formula.not_init()){
+    cout<<"please input file first"<<endl;
+    }else{
+        result = DPLLSolver(formula).get_result();
+    }
+    system("pause");
+    return result;
+}
+
+void Display::show_result(const SolveResult&result){
+    switch (result.status)
+    {
+    case UNKNOWN:
+        cout<<"don't process formula"<<endl;
+        break;
+    case SATISFIABLE:
+        cout<<"Satisfied"<<endl;
+        for(auto lit:result.results){
+            cout<<lit<<"\t";
+        }
+        cout<<endl;
+        cout<<result.duration<<"ms"<<endl;
+        break;
+    default:
+        break;
+    }
+    system("pause");
+}
+
 void Display::run(){
     Formula formula;
-    DPLLSolver solver;
-    Status status=UNKNOWN;
+    SolveResult result;
     bool running = true;
     while(running){
         system("cls");
         show_sat();       
         int command = get_command();
-        string filename;
         switch (command)
         {
         case 1:
-            cout<<"please input file path"<<endl;
-            cin>>filename;
-            try
-            {
-                formula = CnfFileParser(filename).parse();
-            }
-            catch(IOException& e)
-            {
-                std::cerr << e.what() << '\n';
-            }
-            system("pause");
+            parse_file(formula);
             break;
         case 2:
-                if(formula.not_init()){
-            cout<<"please input file first";
-            break;
-        }
-            for(auto clause:formula.clauses){
-                for(auto literal:clause){
-                    cout<<DECODE(literal);
-                }
-                cout<<endl;
-            }
-            system("pause");
+            show_formula(formula);
         break;
         case 3:
-                if(formula.not_init()){
-            cout<<"please input file first";
+            result = process_formula(formula);
             break;
-            }
-            solver = DPLLSolver(formula);
-            status = solver.process();
-            break;
-
         case 4:
-            switch (status)
-            {
-            case UNKNOWN:
-                cout<<"don't process formula"<<endl;
-                break;
-            case SATISFIABLE:
-                cout<<"Satisfied"<<endl;
-                for(int i=0;i<solver.get_current().literals.size();i++){
-                    int value = solver.get_current().literals[i]?-(i+1):i+1;
-                    cout<<value<<"\t";
-                }
-                cout<<endl;
-                break;
-            default:
-                break;
-            }
-            system("pause");
+            show_result(result);
             break;
-
         case 5:
             running = false;
             break;

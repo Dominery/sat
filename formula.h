@@ -30,5 +30,4 @@ struct Formula{
         return clauses.empty();
     }
 };
-
 #endif
