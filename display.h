@@ -5,11 +5,6 @@
 class Display
 {
 private:
-    int get_command();
-    void parse_file(Formula&);
-    void show_formula(Formula&);
-    SolveResult process_formula(Formula&);
-    void show_result(const SolveResult&);
     void show_sat();
 public:
     void run();

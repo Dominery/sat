@@ -9,7 +9,7 @@ private:
     int get_command();
 public:
     void add_command(int key,Command* command){
-        commands.insert(pair<int,Command*>(key,command));
+        commands.insert(std::pair<int,Command*>(key,command));
     };
     Command* handle_input();
     InputHandler(){
