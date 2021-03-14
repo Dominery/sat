@@ -46,6 +46,7 @@ SolveResult DPLLSolver::get_result(){
             results.push_back(value);
         }
     }
+    delete current_node.literal_polarity;
     return SolveResult(status,results,end-start);
 }
 
