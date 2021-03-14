@@ -10,13 +10,14 @@ using namespace std;
 
 void show_processing(bool &running){
     string mark = "\\|/-";
+    vector<string> words{"I'm trying hard to solve it ","one more minute!            ","I feel the answer is coming!"};
     int count = 0;
     while(running){
-        cout<<mark.at(count%4)<<"please wait!running to process..."<<"\r";
+        cout<<mark.at(count%4)<<words[count/5%3]<<"\r";
         count++;
         Sleep(200);
     }
-    cout<<"\r"<<endl;
+    cout<<"                          \r"<<endl;
 }
 
 int ParseFileCommand::execute(Formula&formula){
@@ -58,6 +59,7 @@ int SolveFormulaCommand::execute(Formula&formula){
         task.detach();
         result = DPLLSolver(formula).get_result();
         running = false;
+        Sleep(200);
     }
     switch (result.status)
     {
