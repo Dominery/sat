@@ -11,6 +11,12 @@ public:
     void add_command(int key,Command* command){
         commands.insert(std::pair<int,Command*>(key,command));
     };
+    void clear(){
+        for(auto iter=commands.begin();iter!=commands.end();iter++){
+            delete iter->second;
+        };
+        commands.clear();
+    };
     Command* handle_input();
     InputHandler(){
         commands[0] = new ExitCommand();

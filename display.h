@@ -7,7 +7,7 @@ class Display
 private:
     void show_sat();
 public:
-    void run();
+    void run_sat_menu();
     Display(){};
     ~Display(){};
 };

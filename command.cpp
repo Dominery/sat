@@ -1,10 +1,23 @@
 #include <string>
 #include <iostream>
+#include <windows.h>
+#include <thread>
 #include "command.h"
 #include "cnfFileParser.h"
 #include "DPLLSolver.h"
 
 using namespace std;
+
+void show_processing(bool &running){
+    string mark = "\\|/-";
+    int count = 0;
+    while(running){
+        cout<<mark.at(count%4)<<"please wait!running to process..."<<"\r";
+        count++;
+        Sleep(200);
+    }
+    cout<<"\r"<<endl;
+}
 
 int ParseFileCommand::execute(Formula&formula){
     string filename;
@@ -27,7 +40,7 @@ int ShowFormulaCommand::execute(Formula&formula){
     }else{
         for(auto clause:formula.clauses){
             for(auto literal:clause){
-                cout<<DECODE(literal);
+                cout<<DECODE(literal)<<"\t";
             }
             cout<<endl;
         }
@@ -40,13 +53,14 @@ int SolveFormulaCommand::execute(Formula&formula){
     if(formula.not_init()){
     cout<<"please input file first"<<endl;
     }else{
+        bool running = true;
+        thread task(show_processing,std::ref(running));
+        task.detach();
         result = DPLLSolver(formula).get_result();
+        running = false;
     }
     switch (result.status)
     {
-    case UNKNOWN:
-        cout<<"don't process formula"<<endl;
-        break;
     case SATISFIABLE:
         cout<<"Satisfied"<<endl;
         for(auto lit:result.results){

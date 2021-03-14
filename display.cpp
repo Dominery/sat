@@ -17,7 +17,7 @@ void Display::show_sat(){
     cout<<"3.solve the formula \t0.exit"<<endl;
 }
 
-void Display::run(){
+void Display::run_sat_menu(){
     Formula formula;
     InputHandler input_handler;
     input_handler.add_command(1,new ParseFileCommand());
@@ -43,6 +43,6 @@ void Display::run(){
 int main(int argc, char const *argv[])
 {
     SetConsoleTitle(TEXT("SAT Solver"));
-    Display().run();
+    Display().run_sat_menu();
     return 0;
 }
