@@ -1,4 +1,4 @@
-
+#include "DPLLSolver.h"
 #include "formula.h"
 #ifndef COMAND_H
 #define COMAND_H
@@ -28,6 +28,8 @@ class SolveFormulaCommand:public Command{
     public:
     SolveFormulaCommand(){};
     virtual int execute(Formula&);
+    private:
+    SolveResult solve_process(Formula&);
 };
 
 class ExitCommand:public Command{

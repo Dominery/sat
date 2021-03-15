@@ -35,7 +35,7 @@ void Display::run_sat_menu(){
         }
         system("pause");
     }
-
+    delete formula.literal_polarity;
 }
 
 
