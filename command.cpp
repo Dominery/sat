@@ -20,13 +20,14 @@ void show_processing(bool &running){
     cout<<"I have completed the task, took a look: \r"<<endl;
 }
 
-int ParseFileCommand::execute(Formula&formula){
+int ParseFileCommand::execute(CommandInfo&info){
     string filename;
     cout<<"please input file path"<<endl;
     cin>>filename;
     try
     {
-        formula = CnfFileParser(filename).parse();
+        info.formula = CnfFileParser(filename).parse();
+        info.filename = filename;
     }
     catch(IOException& e)
     {
@@ -35,11 +36,11 @@ int ParseFileCommand::execute(Formula&formula){
     return 1;
 }
 
-int ShowFormulaCommand::execute(Formula&formula){
-    if(formula.not_init()){
+int ShowFormulaCommand::execute(CommandInfo&info){
+    if(info.formula.not_init()){
         cout<<"please input file first"<<endl;
     }else{
-        for(auto clause:formula.clauses){
+        for(auto clause:info.formula.clauses){
             for(auto literal:clause){
                 cout<<DECODE(literal)<<"\t";
             }
@@ -60,13 +61,13 @@ SolveResult SolveFormulaCommand::solve_process(Formula &formula){
         task.detach();
         result = DPLLSolver(formula).get_result();
         running = false;
-        Sleep(200); // wait the show_running thread completing the cout
+        Sleep(400); // wait the show_running thread completing the cout
     }
     return result;
 }
 
-int SolveFormulaCommand::execute(Formula&formula){
-    SolveResult result = solve_process(formula);
+int SolveFormulaCommand::execute(CommandInfo&info){
+    SolveResult result = solve_process(info.formula);
     switch (result.status)
     {
     case SATISFIABLE:
@@ -76,6 +77,10 @@ int SolveFormulaCommand::execute(Formula&formula){
         }
         cout<<endl;
         cout<<result.duration<<"ms"<<endl;
+        exporter.output(info.filename,result);
+        break;
+    case UNSATISFIABLE:
+        cout << "Unsatisfied"<<endl;
         break;
     default:
         break;
@@ -83,6 +88,6 @@ int SolveFormulaCommand::execute(Formula&formula){
     return 1;
 }
 
-int ExitCommand::execute(Formula&){
+int ExitCommand::execute(CommandInfo&){
     return 0;
 }

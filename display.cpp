@@ -3,11 +3,9 @@
 #include <string>
 
 #include "display.h"
-#include "formula.h"
-#include "cnfFileParser.h"
-#include "DPLLSolver.h"
 #include "inputHandler.h"
 #include "command.h"
+#include "txtExporter.h"
 
 using namespace std;
 
@@ -18,30 +16,32 @@ void Display::show_sat(){
 }
 
 void Display::run_sat_menu(){
-    Formula formula;
+    CommandInfo info;
     InputHandler input_handler;
+    TxtExporter exporter(".res");
     input_handler.add_command(1,new ParseFileCommand());
     input_handler.add_command(2,new ShowFormulaCommand());
-    input_handler.add_command(3,new SolveFormulaCommand());
+    input_handler.add_command(3,new SolveFormulaCommand(exporter));
     Command * command=nullptr;
     bool running = true;
+
     while(running){
         system("cls");
         show_sat();
         command = input_handler.handle_input();
         if(command!=nullptr){
-            int mark = command->execute(formula);
+            int mark = command->execute(info);
             if(mark==0)running=false;
         }
         system("pause");
     }
-    delete formula.literal_polarity;
 }
 
 
 
 int main(int argc, char const *argv[])
 {
+    system("COLOR 97");
     SetConsoleTitle(TEXT("SAT Solver"));
     Display().run_sat_menu();
     return 0;
