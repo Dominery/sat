@@ -19,7 +19,19 @@ struct Formula{
     int *literal_polarity;
     std::vector<clause> clauses;
     Formula(std::vector<clause> &cl,std::vector<int>&lit_f,std::vector<int>&lit):literals(lit),clauses(cl),literal_frequency(lit_f){}
-    Formula(){};
+    Formula(){
+        literals.clear();
+        literal_frequency.clear();
+        clauses.clear();
+    };
+    Formula(int num){
+        literals = std::vector<int>(num,-1);
+        literal_frequency = std::vector<int>(num,0);
+        literal_polarity = new int[num];
+        for(int i=0;i<num;++i){
+            literal_polarity[i]=0;
+        }
+    };
     Formula(const Formula &formula){
         literals = formula.literals;
         clauses = formula.clauses;
@@ -29,5 +41,13 @@ struct Formula{
     bool not_init(){
         return clauses.empty();
     };
+    void  add_clause(std::vector<int> literals){
+    for(auto &lit:literals){
+        lit = ENCODE(lit);
+        literal_frequency[lit/2]++;
+        lit%2?literal_polarity[lit/2]--:literal_polarity[lit/2]++;
+    }
+    clauses.push_back(literals);
+}
 };
 #endif
