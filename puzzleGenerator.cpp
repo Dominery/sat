@@ -35,19 +35,19 @@ bool PuzzleGenerator::las_vegas(int n,Sudoku& sudo){
     SolveResult result= solver_.get_result(formula);
     if (result.status==SATISFIABLE){ 
         puzzle = parser_.format(result);
+        formula_ = formula;
         return true;
     };
     return false;
 }
 
 Sudoku PuzzleGenerator::generate(int dim){
-    if(dim%2||dim<5)throw runtime_error("unsupported dim:"+dim);
+    if(dim%2||dim<5)throw IOException("warning","unsupported dim:"+dim);
     Sudoku sudo(dim);
     srand(time(NULL));
     while (!las_vegas(dim*dim/6,sudo))
     {
         sudo.init();
     }
-    sudo.display(cout);
-    return puzzle;
+    return sudo;
 }

@@ -6,8 +6,8 @@ class InputHandler
 {
 private:
     std::map<int,Command*>commands;
-    int get_command();
 public:
+    static int get_command();
     void add_command(int key,Command* command){
         commands.insert(std::pair<int,Command*>(key,command));
     };
@@ -18,9 +18,7 @@ public:
         commands.clear();
     };
     Command* handle_input();
-    InputHandler(){
-        commands[0] = new ExitCommand();
-    };
+    InputHandler(){};
     ~InputHandler(){
         std::map<int,Command*>::iterator iter;
         for(iter=commands.begin();iter!=commands.end();iter++){

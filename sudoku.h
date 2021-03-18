@@ -69,9 +69,10 @@ private:
     SudoParser parser_;
     DPLLSolver solver_;
 public:
+    Formula formula_;
     Sudoku generate(int dim);
     PuzzleGenerator(){};
-    PuzzleGenerator(SudoParser&parser,DPLLSolver&solver):parser_(parser),solver_(solver){};
     ~PuzzleGenerator(){};
+    Sudoku get_answer(){return puzzle;};
 };
 #endif

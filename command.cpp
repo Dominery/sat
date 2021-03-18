@@ -4,8 +4,11 @@
 #include <windows.h>
 #include <thread>
 #include "command.h"
+#include "inputHandler.h"
 #include "cnfFileFormatter.h"
 #include "DPLLSolver.h"
+#include "sudoku.h"
+#include "formula.h"
 
 using namespace std;
 
@@ -62,7 +65,7 @@ SolveResult SolveFormulaCommand::solve_process(Formula &formula){
         bool running = true;
         thread task(show_processing,std::ref(running)); //create a thread for showing process
         task.detach();
-        result = solver_.get_result(formula);
+        result = DPLLSolver().get_result(formula);
         running = false;
         Sleep(400); // wait the show_running thread completing the cout
     }
@@ -100,3 +103,21 @@ void SolveFormulaCommand::store_result(string filename,SolveResult&result){
 int ExitCommand::execute(CommandInfo&){
     return 0;
 }
+
+int GenerateSudoCommand::execute(CommandInfo&info){
+    cout<<"input the dim :";
+    int dim = InputHandler::get_command();
+    try{
+        Sudoku sudo= generator.generate(dim);
+        Sudoku answer = generator.get_answer();
+        sudo.display(cout);
+        cout<<"press any key to see answer"<<endl;
+        string str;
+        cin>>str;
+        answer.display(cout);
+    }catch(IOException&e){
+        cout<<e.what()<<endl;
+    }
+    return 1;
+}
+

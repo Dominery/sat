@@ -1,5 +1,5 @@
-#include "resultFormatter.h"
 #include "DPLLSolver.h"
+#include "inputHandler.h"
 #ifndef DISPLAY_H
 #define DISPLAY_H
 class Display
@@ -7,10 +7,11 @@ class Display
 private:
     void show_sat();
     void show_sudo_menu();
+    void run_sat_menu(InputHandler&input_handler);
+    void run_sudo_menu(InputHandler&input_handler);
 public:
-    void run_sat_menu(ResultFormatter&);
-    void run_sudo_menu();
-    Display(){};
+    void run_main_menu();
+    Display();
     ~Display(){};
 };
 #endif
