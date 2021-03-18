@@ -1,8 +1,10 @@
 #include <vector>
 #include <iostream>
+#include "formula.h"
+#include "DPLLSolver.h"
 #ifndef SUDOKU_H
 #define SUDOKU_H
-
+#define ENCODE_CELL(i,j,n) (i*n+j+1)
 struct Sudoku
 {
     // -1 represent unknown
@@ -38,4 +40,41 @@ struct Sudoku
 };
 
 
+class SudoParser
+{
+private:
+    Sudoku sudoku;
+    int dim;
+    // process initialed 1 or 0 in puzzle
+    void rule_0(Formula&);
+     // there are no three continuous 1 or 0 in every columns or every rows 
+    void rule_1(Formula&);
+    // there are no same rows or columns
+    void rule_3(Formula&);
+    void rule_3_helper(std::vector<int>,Formula&);
+    // every column and row must have same  number of 1 and 0
+    void rule_2(Formula&);
+public:
+    SudoParser(Sudoku&sudo):sudoku(sudo){dim=sudo.size;};
+    ~SudoParser(){};
+    Formula parse();
+};
+
+class SudoFormatter
+{
+private:
+public:
+    Sudoku format(SolveResult&,int);
+};
+
+class PuzzleGenerator
+{
+private:
+    bool las_vegas(int n,Sudoku&);
+    Sudoku puzzle;
+public:
+    Sudoku generate(int dim);
+    PuzzleGenerator(){};
+    ~PuzzleGenerator(){};
+};
 #endif

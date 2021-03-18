@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <thread>
 #include "command.h"
-#include "cnfFileParser.h"
+#include "cnfFileFormatter.h"
 #include "DPLLSolver.h"
 
 using namespace std;
@@ -26,7 +26,7 @@ int ParseFileCommand::execute(CommandInfo&info){
     cin>>filename;
     try
     {
-        info.formula = CnfFileParser(filename).parse();
+        info.formula = CnfFileFormatter(filename).parse();
         info.filename = filename;
     }
     catch(IOException& e)

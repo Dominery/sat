@@ -6,7 +6,9 @@
 #include "inputHandler.h"
 #include "command.h"
 #include "txtExporter.h"
-#include "puzzleGenerator.h"
+#include "sudoku.h"
+#include "cnfFileFormatter.h"
+#include "DPLLSolver.h"
 
 using namespace std;
 
@@ -69,6 +71,8 @@ int main(int argc, char const *argv[])
 {
     system("COLOR 97");
     SetConsoleTitle(TEXT("SAT Solver"));
+    // Formula formula = CnfFileFormatter("test.cnf").parse();
+    // DPLLSolver(formula).get_result();
     // TxtExporter exporter(".res");
     // Display().run_sat_menu(exporter);
     Display().run_sudo_menu();

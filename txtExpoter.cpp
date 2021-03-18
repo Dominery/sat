@@ -11,7 +11,7 @@ void TxtExporter::output(string filename,SolveResult&result){
     out << "s\t"<<(result.status==UNSATISFIABLE?0:1)<<endl;
     out <<"v\t";
     for(int i=0;i<result.results.size();i++){
-        if(i%20==0&&i!=0)out<<endl;
+        if(i%20==0&&i!=0)out<<result.results[i]<<endl;
         else{
             out<<result.results[i]<<" ";
         }

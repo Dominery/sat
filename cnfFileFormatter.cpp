@@ -4,7 +4,7 @@
 #include<string>
 #include<vector>
 
-#include"cnfFileParser.h"
+#include"cnfFileFormatter.h"
 #include"Formula.h"
 
 using namespace std;
@@ -17,17 +17,17 @@ const char* IOException::what(){
     return info.c_str();
 }
 
-CnfFileParser::CnfFileParser(string filename)
+CnfFileFormatter::CnfFileFormatter(string filename)
 {
     fin.open(filename);
     if(!fin.is_open())throw IOException("error",filename+":not found");
 }
 
-CnfFileParser::~CnfFileParser()
+CnfFileFormatter::~CnfFileFormatter()
 {
     if(fin.is_open())fin.close(); // close the ifstream if the object is destroyed
 }
-void CnfFileParser::move_to_start(){
+void CnfFileFormatter::move_to_start(){
     while(!fin.eof()){
         char c;
         fin >> c;
@@ -51,18 +51,11 @@ void CnfFileParser::move_to_start(){
     }
 }
 
-clause CnfFileParser::parseline(vector<int> &literal_frequency,int*literal_polarity){
+clause CnfFileFormatter::parseline(vector<int> &literal_frequency,int*literal_polarity){
     int value;
     fin>>value;
     clause cl;
     while(value != 0){ // encode the liberal if don't meet 0
-        // if(value>0){
-        //     cl.push_back(2*(value-1)); // encode all positive liberal as even start at 0
-        //     literal_frequency[value-1]++; 
-        // }else{
-        //     cl.push_back(2*(-1*value)-1); // encode all negative liberal as obb start at 1
-        //     literal_frequency[-value-1]++;
-        // }
         value = ENCODE(value);
         cl.push_back(value);
         literal_frequency[value/2]++;
@@ -73,7 +66,7 @@ clause CnfFileParser::parseline(vector<int> &literal_frequency,int*literal_polar
 }
 
 // parse all line of liberals
-Formula CnfFileParser::parse(){ 
+Formula CnfFileFormatter::parse(){ 
     move_to_start();
     int var,num;
     fin>>var>>num;
@@ -93,3 +86,15 @@ Formula CnfFileParser::parse(){
     return formula;
 }
 
+void CnfFileFormatter::format(Formula&formula,ostream&os){
+    // output the info of formula
+    os<<"p cnf "<<formula.literals.size()<<" "<<formula.clauses.size()<<"\n"; 
+    
+    for(auto clause:formula.clauses){
+        for(auto lit:clause){
+            os<<DECODE(lit)<<" ";
+        }
+        os<<0<<"\n";
+    }
+
+}

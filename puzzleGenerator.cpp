@@ -3,11 +3,13 @@
 #include <set>
 #include <stdexcept>
 #include <cmath>
-#include "puzzleGenerator.h"
+#include <iostream>
+#include <fstream>
 #include "sudoku.h"
-#include "sudoParser.h"
 #include "DPLLSolver.h"
 #include "formula.h"
+#include "cnfFileFormatter.h"
+#include "txtExporter.h"
 
 
 using namespace std;
@@ -29,7 +31,15 @@ bool PuzzleGenerator::las_vegas(int n,Sudoku& sudo){
         sudo.sudoku[row][col] = rand()%2;
     }
     Formula formula = SudoParser(sudo).parse();
-    if (DPLLSolver(formula).get_result().status==SATISFIABLE)return true;
+    // ofstream out("test.cnf");
+    // CnfFileFormatter().format(formula,out);
+    // out.close();
+    SolveResult result= DPLLSolver(formula).get_result();
+    // TxtExporter(".res").output("test.cnf",result);
+    if (result.status==SATISFIABLE){
+        puzzle = SudoFormatter().format(result,sudo.size);
+        return true;
+    };
     return false;
 }
 
@@ -41,6 +51,6 @@ Sudoku PuzzleGenerator::generate(int dim){
     {
         sudo.init();
     }
-    
-    return sudo;
+    sudo.display(cout);
+    return puzzle;
 }

@@ -61,6 +61,9 @@ Status DPLLSolver::single_clause(Formula& formula){
             if(formula.clauses[i].size()==1){
                 single_found = true;
                 int literal = formula.clauses[i][0];
+                if(literal/2==30){
+                    literal++;literal--;
+                }
                 formula.literals[literal/2] = literal%2;
                 formula.literal_frequency[literal/2]=-1; // mark the literal frequency
                 Status status = transform_clauses(formula,literal/2);
@@ -88,7 +91,6 @@ Status DPLLSolver::transform_clauses(Formula &formula,int literal){
                 formula.clauses[i].erase(formula.clauses[i].begin()+j);
                 j--;
                 if(formula.clauses[i].empty())return UNSATISFIABLE;
-                break;
             }
         }
     }
@@ -105,6 +107,10 @@ void DPLLSolver::decide_next_branch(){
     int i = distance(current_node.literal_frequency.begin(),
     max_element(current_node.literal_frequency.begin(),current_node.literal_frequency.end()));
     current_node.literal_frequency[i] = -1;
+
+    if (i==30){
+        i++;i--;
+    }
 
     lstack.push(i);
     current_literal_choice = i;

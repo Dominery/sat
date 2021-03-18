@@ -1,13 +1,12 @@
 #include <cmath>
-#include "sudoParser.h"
 #include "formula.h"
-
+#include "sudoku.h"
 using namespace std;
 
 vector<vector<int>> dfs(vector<int>,int);
 
 Formula SudoParser::parse(){
-    int num = pow(sudoku.size,3)*(sudoku.size-1)*3 + pow(sudoku.size,2);
+    int num = pow(sudoku.size,2)*(sudoku.size-1)*3 + pow(sudoku.size,2);
     Formula formula(num);
 
     rule_0(formula);
