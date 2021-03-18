@@ -5,7 +5,7 @@
 #include "display.h"
 #include "inputHandler.h"
 #include "command.h"
-#include "txtExporter.h"
+#include "resultFormatter.h"
 #include "sudoku.h"
 #include "cnfFileFormatter.h"
 #include "DPLLSolver.h"
@@ -18,12 +18,12 @@ void Display::show_sat(){
     cout<<"3.solve the formula \t0.exit"<<endl;
 }
 
-void Display::run_sat_menu(TxtExporter&exporter){
+void Display::run_sat_menu(ResultFormatter&exporter){
     CommandInfo info;
     InputHandler input_handler;
     input_handler.add_command(1,new ParseFileCommand());
     input_handler.add_command(2,new ShowFormulaCommand());
-    input_handler.add_command(3,new SolveFormulaCommand(exporter));
+    input_handler.add_command(3,new SolveFormulaCommand(exporter,solver_));
     Command * command=nullptr;
     bool running = true;
 
@@ -45,7 +45,7 @@ void Display::run_sudo_menu(){
     while(running){
         system("cls");
         show_sudo_menu();
-        cin>>command;
+        cin>>command;ifstream fin("test.res");
         switch (command)
         {
         case 1:
@@ -53,7 +53,9 @@ void Display::run_sudo_menu(){
             cin>>dim;
             PuzzleGenerator().generate(dim).display(cout);
             break;
-        
+        case 2:{
+            SolveResult result = ResultFormatter().parse(fin);
+        }
         default:
             break;
         }
@@ -73,8 +75,7 @@ int main(int argc, char const *argv[])
     SetConsoleTitle(TEXT("SAT Solver"));
     // Formula formula = CnfFileFormatter("test.cnf").parse();
     // DPLLSolver(formula).get_result();
-    // TxtExporter exporter(".res");
     // Display().run_sat_menu(exporter);
-    Display().run_sudo_menu();
+    // Display().run_sudo_menu();
     return 0;
 }

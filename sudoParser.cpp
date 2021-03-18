@@ -1,11 +1,14 @@
 #include <cmath>
 #include "formula.h"
 #include "sudoku.h"
+#include "DPLLSolver.h"
 using namespace std;
 
 vector<vector<int>> dfs(vector<int>,int);
 
-Formula SudoParser::parse(){
+Formula SudoParser::parse(Sudoku&sudo){
+    sudoku = sudo;
+    dim = sudo.size;
     int num = pow(sudoku.size,2)*(sudoku.size-1)*3 + pow(sudoku.size,2);
     Formula formula(num);
 
@@ -14,6 +17,16 @@ Formula SudoParser::parse(){
     rule_2(formula);
     rule_3(formula);
     return formula;
+}
+
+Sudoku SudoParser::format(SolveResult&result){
+    Sudoku sudo(dim);
+    for(int i=0;i<dim*dim;++i){
+        int row = i/dim;
+        int line = i%dim;
+        sudo.sudoku[row][line] = result.results[i]>0?1:0;
+    }
+    return sudo;
 }
 
 void SudoParser::rule_0(Formula&formula){
@@ -31,8 +44,9 @@ void SudoParser::rule_0(Formula&formula){
 void SudoParser::rule_1(Formula&formula){
     for(int i=0;i<dim;i++){   // process continuous num in every row 
         for(int j=0;j<dim-2;j++){
-            formula.add_clause({ENCODE_CELL(i,j,dim),ENCODE_CELL(i,j+1,dim),ENCODE_CELL(i,j+2,dim)});
-            formula.add_clause({-ENCODE_CELL(i,j,dim),-ENCODE_CELL(i,j+1,dim),-ENCODE_CELL(i,j+2,dim)});
+            int value = ENCODE_CELL(i,j,dim);
+            formula.add_clause({value,value+1,value+2});
+            formula.add_clause({-value,-value-1,-value-2});
         }
     }
     for(int j=0;j<dim;j++){
@@ -94,14 +108,24 @@ void SudoParser::rule_2(Formula&formula){
 
     for(int i=0;i<dim;++i){
         for(auto comb:combs){
+            // process row
             auto lit = comb;
             for(auto &l:lit){
                 l = ENCODE_CELL(i,l,dim);
             }
             formula.add_clause(lit);
+            for(auto &l:lit){
+                l = -l;
+            }
+            formula.add_clause(lit);
+            // process column
             lit = comb;
             for(auto &l:lit){
                 l = ENCODE_CELL(l,i,dim);
+            }
+            formula.add_clause(lit);
+            for(auto &l:lit){
+                l = -l;
             }
             formula.add_clause(lit);
         }

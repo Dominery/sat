@@ -1,7 +1,7 @@
 #include <string>
 #include "DPLLSolver.h"
 #include "formula.h"
-#include "txtExporter.h"
+#include "resultFormatter.h"
 #ifndef COMAND_H
 #define COMAND_H
 
@@ -37,10 +37,12 @@ class ShowFormulaCommand:public Command{
 
 class SolveFormulaCommand:public Command{
     public:
-    SolveFormulaCommand(TxtExporter&ex):exporter(ex){};
+    SolveFormulaCommand(ResultFormatter&ex,DPLLSolver&solver):exporter(ex),solver_(solver){};
     virtual int execute(CommandInfo&);
     private:
-    TxtExporter exporter;
+    ResultFormatter exporter;
+    DPLLSolver solver_;
+    void store_result(std::string filename,SolveResult&result);
     SolveResult solve_process(Formula&);
 };
 

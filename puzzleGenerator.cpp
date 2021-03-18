@@ -9,7 +9,7 @@
 #include "DPLLSolver.h"
 #include "formula.h"
 #include "cnfFileFormatter.h"
-#include "txtExporter.h"
+#include "resultFormatter.h"
 
 
 using namespace std;
@@ -30,14 +30,11 @@ bool PuzzleGenerator::las_vegas(int n,Sudoku& sudo){
         int col = *i%sudo.size;
         sudo.sudoku[row][col] = rand()%2;
     }
-    Formula formula = SudoParser(sudo).parse();
-    // ofstream out("test.cnf");
-    // CnfFileFormatter().format(formula,out);
-    // out.close();
-    SolveResult result= DPLLSolver(formula).get_result();
-    // TxtExporter(".res").output("test.cnf",result);
-    if (result.status==SATISFIABLE){
-        puzzle = SudoFormatter().format(result,sudo.size);
+    Formula formula = parser_.parse(sudo);
+
+    SolveResult result= solver_.get_result(formula);
+    if (result.status==SATISFIABLE){ 
+        puzzle = parser_.format(result);
         return true;
     };
     return false;
@@ -47,7 +44,7 @@ Sudoku PuzzleGenerator::generate(int dim){
     if(dim%2||dim<5)throw runtime_error("unsupported dim:"+dim);
     Sudoku sudo(dim);
     srand(time(NULL));
-    while (!las_vegas(pow(dim-2,2)/3,sudo))
+    while (!las_vegas(dim*dim/6,sudo))
     {
         sudo.init();
     }

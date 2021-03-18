@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <windows.h>
 #include <thread>
 #include "command.h"
@@ -59,7 +60,7 @@ SolveResult SolveFormulaCommand::solve_process(Formula &formula){
         bool running = true;
         thread task(show_processing,std::ref(running)); //create a thread for showing process
         task.detach();
-        result = DPLLSolver(formula).get_result();
+        result = solver_.get_result(formula);
         running = false;
         Sleep(400); // wait the show_running thread completing the cout
     }
@@ -77,7 +78,7 @@ int SolveFormulaCommand::execute(CommandInfo&info){
         }
         cout<<endl;
         cout<<result.duration<<"ms"<<endl;
-        exporter.output(info.filename,result);
+        store_result(info.filename,result);
         break;
     case UNSATISFIABLE:
         cout << "Unsatisfied"<<endl;
@@ -88,6 +89,12 @@ int SolveFormulaCommand::execute(CommandInfo&info){
     return 1;
 }
 
+void SolveFormulaCommand::store_result(string filename,SolveResult&result){
+    string new_filename = filename.substr(0,filename.rfind('.'))+".res"; //change the extension of filename to res
+    ofstream out(new_filename);
+    exporter.format(result,out);
+    out.close();
+}
 int ExitCommand::execute(CommandInfo&){
     return 0;
 }

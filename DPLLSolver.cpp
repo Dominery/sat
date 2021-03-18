@@ -4,15 +4,6 @@
 #include "DPLLSolver.h"
 using namespace std;
 
-
-DPLLSolver::DPLLSolver(Formula& formula):current_node(formula)
-{
-}
-
-DPLLSolver::~DPLLSolver()
-{
-}
-
 Status DPLLSolver::process(){
     Status status = preprocess();
     if(status != UNKNOWN)return status;
@@ -35,7 +26,8 @@ Status DPLLSolver::process(){
     
 }
 
-SolveResult DPLLSolver::get_result(){
+SolveResult DPLLSolver::get_result(Formula&formula){
+    current_node = formula;
     clock_t start = clock();
     Status status = process();
     clock_t end = clock();
@@ -46,6 +38,8 @@ SolveResult DPLLSolver::get_result(){
             results.push_back(value);
         }
     }
+    fstack = stack<Formula>();
+    lstack = stack<int>();
     return SolveResult(status,results,end-start);
 }
 

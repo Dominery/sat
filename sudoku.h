@@ -55,16 +55,10 @@ private:
     // every column and row must have same  number of 1 and 0
     void rule_2(Formula&);
 public:
-    SudoParser(Sudoku&sudo):sudoku(sudo){dim=sudo.size;};
+    SudoParser(){};
     ~SudoParser(){};
-    Formula parse();
-};
-
-class SudoFormatter
-{
-private:
-public:
-    Sudoku format(SolveResult&,int);
+    Formula parse(Sudoku&sudo);
+    Sudoku format(SolveResult&result);
 };
 
 class PuzzleGenerator
@@ -72,9 +66,12 @@ class PuzzleGenerator
 private:
     bool las_vegas(int n,Sudoku&);
     Sudoku puzzle;
+    SudoParser parser_;
+    DPLLSolver solver_;
 public:
     Sudoku generate(int dim);
     PuzzleGenerator(){};
+    PuzzleGenerator(SudoParser&parser,DPLLSolver&solver):parser_(parser),solver_(solver){};
     ~PuzzleGenerator(){};
 };
 #endif

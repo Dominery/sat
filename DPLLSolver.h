@@ -45,13 +45,13 @@ private:
     Status transform_clauses(Formula&,int literal);
     Status process();
 public:
-    DPLLSolver(Formula&);
     DPLLSolver(){};
     DPLLSolver(const DPLLSolver &solver){
         current_node = solver.current_node;
     }
-    ~DPLLSolver();
-    SolveResult get_result();
+    ~DPLLSolver(){};
+    // get object of SolveResult of formula
+    SolveResult get_result(Formula&formula);
 };
 
 
