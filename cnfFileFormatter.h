@@ -12,14 +12,14 @@
 class CnfFileFormatter
 {
 private:
-    std::ifstream fin;
-    void move_to_start(); // read the comments of cnf file if meet the unsupported syntax throw IOException
-    clause parseline(std::vector<int>&,int[]);
+    void move_to_start(std::ifstream&fin); // read the comments of cnf file if meet the unsupported syntax throw IOException
+    clause parseline(std::vector<int>&,int[],std::ifstream&fin);
 public:
-    CnfFileFormatter(std::string);
     CnfFileFormatter(){};
-    ~CnfFileFormatter();
-    Formula parse(); // parse the cnf file data to Formula struct
+    ~CnfFileFormatter(){};
+    // parse the cnf file data to Formula struct
+    Formula parse(std::ifstream&fin); 
+    // transfer data of formula as output stream
     void format(Formula&formula,std::ostream&os);
 };
 

@@ -23,7 +23,7 @@ void Display::run_sat_menu(ResultFormatter&exporter){
     InputHandler input_handler;
     input_handler.add_command(1,new ParseFileCommand());
     input_handler.add_command(2,new ShowFormulaCommand());
-    input_handler.add_command(3,new SolveFormulaCommand(exporter,solver_));
+    input_handler.add_command(3,new SolveFormulaCommand());
     Command * command=nullptr;
     bool running = true;
 

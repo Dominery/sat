@@ -25,9 +25,11 @@ int ParseFileCommand::execute(CommandInfo&info){
     string filename;
     cout<<"please input file path"<<endl;
     cin>>filename;
+    ifstream fin(filename);
     try
     {
-        info.formula = CnfFileFormatter(filename).parse();
+        if(!fin.is_open())throw IOException("warning","file:"+filename+" not exit");
+        info.formula = file_formatter.parse(fin);
         info.filename = filename;
     }
     catch(IOException& e)

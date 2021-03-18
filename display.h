@@ -7,12 +7,10 @@ class Display
 private:
     void show_sat();
     void show_sudo_menu();
-    DPLLSolver solver_;
 public:
     void run_sat_menu(ResultFormatter&);
     void run_sudo_menu();
     Display(){};
-    Display(DPLLSolver&solver):solver_(solver){};
     ~Display(){};
 };
 #endif

@@ -2,6 +2,7 @@
 #include "DPLLSolver.h"
 #include "formula.h"
 #include "resultFormatter.h"
+#include "cnfFileFormatter.h"
 #ifndef COMAND_H
 #define COMAND_H
 
@@ -23,6 +24,8 @@ class Command
 //SAT process command
 
 class ParseFileCommand:public Command{
+    private:
+    CnfFileFormatter file_formatter;
     public:
     ParseFileCommand(){};
     virtual int execute(CommandInfo&);
@@ -37,7 +40,7 @@ class ShowFormulaCommand:public Command{
 
 class SolveFormulaCommand:public Command{
     public:
-    SolveFormulaCommand(ResultFormatter&ex,DPLLSolver&solver):exporter(ex),solver_(solver){};
+    SolveFormulaCommand(){};
     virtual int execute(CommandInfo&);
     private:
     ResultFormatter exporter;

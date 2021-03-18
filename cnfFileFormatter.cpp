@@ -16,18 +16,7 @@ IOException::IOException(string s,string info):runtime_error(s){
 const char* IOException::what(){
     return info.c_str();
 }
-
-CnfFileFormatter::CnfFileFormatter(string filename)
-{
-    fin.open(filename);
-    if(!fin.is_open())throw IOException("error",filename+":not found");
-}
-
-CnfFileFormatter::~CnfFileFormatter()
-{
-    if(fin.is_open())fin.close(); // close the ifstream if the object is destroyed
-}
-void CnfFileFormatter::move_to_start(){
+void CnfFileFormatter::move_to_start(ifstream&fin){
     while(!fin.eof()){
         char c;
         fin >> c;
@@ -51,7 +40,7 @@ void CnfFileFormatter::move_to_start(){
     }
 }
 
-clause CnfFileFormatter::parseline(vector<int> &literal_frequency,int*literal_polarity){
+clause CnfFileFormatter::parseline(vector<int> &literal_frequency,int*literal_polarity,ifstream&fin){
     int value;
     fin>>value;
     clause cl;
@@ -66,8 +55,8 @@ clause CnfFileFormatter::parseline(vector<int> &literal_frequency,int*literal_po
 }
 
 // parse all line of liberals
-Formula CnfFileFormatter::parse(){ 
-    move_to_start();
+Formula CnfFileFormatter::parse(ifstream&fin){ 
+    move_to_start(fin);
     int var,num;
     fin>>var>>num;
     vector<clause> clauses;
@@ -79,7 +68,7 @@ Formula CnfFileFormatter::parse(){
     }
 
     for(int i=0;i<num;i++){
-        clauses.push_back(parseline(literal_frequency,literal_polarity));
+        clauses.push_back(parseline(literal_frequency,literal_polarity,fin));
     }
     Formula formula(clauses,literal_frequency,literals);
     formula.literal_polarity = literal_polarity;
