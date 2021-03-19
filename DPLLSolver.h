@@ -18,18 +18,22 @@ struct SolveResult{
         duration = result.duration;
     }
 };
+
+
+
 class DPLLSolver
 {
 private:
-    // stack contain all state of formula 
-    // which can help for backtrack
-    std::stack<Formula> fstack; 
-    // store each choice
-    std::stack<int> lstack;
-    // current_node is the current formula 
-    Formula current_node;
+    // current formulainfo
+    FormulaInfo info;
+    // store another choice
+    std::stack<FormulaInfo> info_stack;
+    // store the result of every literals
+    std::vector<int> literals;
+    //store the first formula
+    Formula formula;
+    int clauses_num;
 
-    int current_literal_choice;
     // preprocess the formula and then push it to fstack
     Status preprocess();
     // change the current formula
@@ -41,14 +45,13 @@ private:
     // pop the formula of fstack and change the current formula
     void backtrack(int level);
     // if clause only has a literal,make the literal true and transform clauses
-    Status single_clause(Formula&);
-    Status transform_clauses(Formula&,int literal);
+    Status single_clause();
+    Status transform_clauses(int literal);
     Status process();
+
+    int choose_literal(int pos);
 public:
     DPLLSolver(){};
-    DPLLSolver(const DPLLSolver &solver){
-        current_node = solver.current_node;
-    }
     ~DPLLSolver(){};
     // get object of SolveResult of formula
     SolveResult get_result(Formula&formula);

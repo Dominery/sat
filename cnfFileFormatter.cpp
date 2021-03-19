@@ -40,15 +40,12 @@ void CnfFileFormatter::move_to_start(ifstream&fin){
     }
 }
 
-clause CnfFileFormatter::parseline(vector<int> &literal_frequency,int*literal_polarity,ifstream&fin){
+clause CnfFileFormatter::parseline(ifstream&fin){
     int value;
     fin>>value;
     clause cl;
     while(value != 0){ // encode the liberal if don't meet 0
-        value = ENCODE(value);
         cl.push_back(value);
-        literal_frequency[value/2]++;
-        value%2?literal_polarity[value/2]--:literal_polarity[value/2]++;
         fin >> value;
     }
     return cl;
@@ -59,19 +56,11 @@ Formula CnfFileFormatter::parse(ifstream&fin){
     move_to_start(fin);
     int var,num;
     fin>>var>>num;
-    vector<clause> clauses;
-    vector<int> literals(var,-1); 
-    vector<int> literal_frequency(var,0);
-    int *literal_polarity = new int[var];
-    for(int i=0;i<var;i++){
-        literal_polarity[i]=0;
-    }
+    Formula formula(var);
 
     for(int i=0;i<num;i++){
-        clauses.push_back(parseline(literal_frequency,literal_polarity,fin));
+        formula.add_clause(parseline(fin));
     }
-    Formula formula(clauses,literal_frequency,literals);
-    formula.literal_polarity = literal_polarity;
     return formula;
 }
 

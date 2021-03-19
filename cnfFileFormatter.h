@@ -13,7 +13,7 @@ class CnfFileFormatter
 {
 private:
     void move_to_start(std::ifstream&fin); // read the comments of cnf file if meet the unsupported syntax throw IOException
-    clause parseline(std::vector<int>&,int[],std::ifstream&fin);
+    clause parseline(std::ifstream&fin);
 public:
     CnfFileFormatter(){};
     ~CnfFileFormatter(){};

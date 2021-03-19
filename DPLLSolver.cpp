@@ -27,64 +27,68 @@ Status DPLLSolver::process(){
 }
 
 SolveResult DPLLSolver::get_result(Formula&formula){
-    current_node = formula;
+    this->formula = formula;
+    info = formula.info;
+    clauses_num = info.clauses_num;
+    literals = vector<int>(info.literal_frequency.size(),-1);
     clock_t start = clock();
     Status status = process();
     clock_t end = clock();
     vector<int> results;
     if(status==SATISFIABLE){
-        for(int i=0;i<current_node.literals.size();i++){
-            int value = current_node.literals[i]?-(i+1):i+1;
+        for(int i=0;i<literals.size();i++){
+            int value = literals[i]?-(i+1):i+1;
             results.push_back(value);
         }
     }
-    fstack = stack<Formula>();
-    lstack = stack<int>();
+    info_stack = stack<FormulaInfo>();
+    literals.clear();
     return SolveResult(status,results,end-start);
 }
 
-Status DPLLSolver::single_clause(Formula& formula){
-    if(formula.clauses.empty())return SATISFIABLE;
+Status DPLLSolver::single_clause(){
+    if(info.clauses_num==0)return SATISFIABLE;
     // single_found will be true until the formula doesn't have single clauses
     bool single_found = true;
     while (single_found)
     {
         single_found = false;
-        auto clause_num = formula.clauses.size();
-        for(int i=0;i<clause_num;i++){
-            if(formula.clauses[i].size()==1){
+        for(int i=0;i<clauses_num;i++){
+            if(info.clause_literals_num[i]==1){
                 single_found = true;
-                int literal = formula.clauses[i][0];
-                if(literal/2==30){
-                    literal++;literal--;
-                }
-                formula.literals[literal/2] = literal%2;
-                formula.literal_frequency[literal/2]=-1; // mark the literal frequency
-                Status status = transform_clauses(formula,literal/2);
+                int literal = choose_literal(i);
+                literals[literal/2] = literal%2;
+                info.literal_frequency[literal/2]=-1; // mark the literal frequency
+                info.clause_literals_num[i]--;
+                info.clauses_num--;
+                Status status = transform_clauses(literal/2);
                 if (status==UNKNOWN)break;
                 else return status;
-            }else if(formula.clauses[i].empty()){
-                return UNSATISFIABLE;
             }
         }
     }
     return UNKNOWN;
     
 }
+int DPLLSolver::choose_literal(int pos){
+    for(auto i:formula.clauses[pos]){
+        if(info.literal_frequency[i/2]!=-1){
+            return i;
+        }
+    }
+}
 
-Status DPLLSolver::transform_clauses(Formula &formula,int literal){
-    int value_of_literal = formula.literals[literal]; // 0 true;1 false
-    for(int i=0;i<formula.clauses.size();i++){
-        for(int j=0;j<formula.clauses[i].size();j++){
-            if(2*literal+value_of_literal==formula.clauses[i][j]){
-                formula.clauses.erase(formula.clauses.begin()+i);
-                i--;
-                if(formula.clauses.empty())return SATISFIABLE;
-                break;
-            }else if(literal==formula.clauses[i][j]/2){
-                formula.clauses[i].erase(formula.clauses[i].begin()+j);
-                j--;
-                if(formula.clauses[i].empty())return UNSATISFIABLE;
+Status DPLLSolver::transform_clauses(int literal){
+    int value_of_literal = literals[literal]; // 0 true;1 false
+    for(auto i:formula.literals_position[literal]){
+        for(int lit=0;lit<formula.clauses[i].size()&&info.clause_literals_num[i];lit++){
+            if(literal*2+value_of_literal==formula.clauses[i][lit]){
+                info.clause_literals_num[i] =0;
+                info.clauses_num--;
+                if(info.clauses_num==0)return SATISFIABLE;
+            }else if(literal == formula.clauses[i][lit]/2){
+                info.clause_literals_num[i]--;
+                if(info.clause_literals_num[i]==0)return UNSATISFIABLE;
             }
         }
     }
@@ -92,27 +96,21 @@ Status DPLLSolver::transform_clauses(Formula &formula,int literal){
 }
 
 Status DPLLSolver::preprocess(){
-    Status status = single_clause(current_node);
+    Status status = single_clause();
     return status;
 }
 
 void DPLLSolver::decide_next_branch(){
     //find the literal with maximum frequency in current formula
-    int i = distance(current_node.literal_frequency.begin(),
-    max_element(current_node.literal_frequency.begin(),current_node.literal_frequency.end()));
-    current_node.literal_frequency[i] = -1;
+    int i = distance(info.literal_frequency.begin(),
+    max_element(info.literal_frequency.begin(),info.literal_frequency.end()));
+    info.literal_frequency[i] = -1;
 
-    if (i==30){
-        i++;i--;
-    }
+    info.literal_choice = i; 
+    info_stack.push(info);
 
-    lstack.push(i);
-    current_literal_choice = i;
-
-    int value = current_node.literal_polarity[i]>0?0:1;
-    current_node.literals[i] = (value+1)%2;
-    fstack.push(current_node);
-    current_node.literals[i]=value;
+    int value = formula.literal_polarity[i]>0?0:1;
+    literals[i] = (value+1)%2;
 }
 // deduce will judge the influence of the current branch
 // return value:
@@ -120,24 +118,23 @@ void DPLLSolver::decide_next_branch(){
 //      CONFLICT if the clauses in formula have conflict
 //      UNKNOWN can't deduce the result above 
 Status DPLLSolver::deduce(){
-    Status status = transform_clauses(current_node,current_literal_choice);
+    Status status = transform_clauses(info.literal_choice);
     if (status==UNSATISFIABLE)return CONFLICT;
-    status = single_clause(current_node);
+    status = single_clause();
     if(status == UNSATISFIABLE)return CONFLICT;
     return status;
 }
 
 int DPLLSolver::analyze_conflict(){
-    if(fstack.empty())return 0;
+    if(info_stack.empty())return 0;
     return 1;
 }
 
 void DPLLSolver::backtrack(int level){
 
     for(int i=0;i<level;i++){
-        current_node = fstack.top();
-        fstack.pop();
-        current_literal_choice = lstack.top();
-        lstack.pop();
+        info = info_stack.top();
+        info_stack.pop();
+        literals[info.literal_choice]  = (literals[info.literal_choice]+1)%2;
     }
 }
