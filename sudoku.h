@@ -1,4 +1,5 @@
 #include <vector>
+#include <set>
 #include <iostream>
 #include "formula.h"
 #include "DPLLSolver.h"
@@ -68,6 +69,8 @@ private:
     Sudoku puzzle;
     SudoParser parser_;
     DPLLSolver solver_;
+    void random_choose(int n,int num,std::set<int>&choices);
+    Sudoku dig(int num_hole);
 public:
     Formula formula_;
     Sudoku generate(int dim);

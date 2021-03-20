@@ -17,14 +17,11 @@ using namespace std;
 bool PuzzleGenerator::las_vegas(int n,Sudoku& sudo){
     set<int> random_init;
     int num = sudo.size * sudo.size;
-    while (random_init.size()!=n)
-    {
-        int value = rand()%num;
-        auto index = random_init.find(value);
-        if(index ==random_init.end()){
-            random_init.insert(value);
-        }
-    }
+    // for(int i=0;i<sudo.size;++i){
+    //     random_init.insert(i*(sudo.size+1));
+    //     random_init.insert((i+1)*(sudo.size-1));
+    // }
+    random_choose(n,num,random_init);
     for(auto i=random_init.begin();i!=random_init.end();++i){
         int row = *i/sudo.size;
         int col = *i%sudo.size;
@@ -51,6 +48,32 @@ Sudoku PuzzleGenerator::generate(int dim){
     while (!las_vegas(pow(dim-2,2)/3,sudo))
     {
         sudo.init();
+    }
+    return dig(dim*(dim-1));
+}
+
+
+void PuzzleGenerator::random_choose(int n,int num,set<int>&choices){
+    while (choices.size()!=n)
+    {
+        int value = rand()%num;
+        auto index = choices.find(value);
+        if(index ==choices.end()){
+            choices.insert(value);
+        }
+    }
+}
+
+Sudoku PuzzleGenerator::dig(int num_hole){
+    set<int> choices;
+    int num = puzzle.size*puzzle.size;
+    random_choose(num-num_hole,num,choices);
+    
+    Sudoku sudo(puzzle.size);
+    for(auto i=choices.begin();i!=choices.end();++i){
+        int row = *i/sudo.size;
+        int col = *i%sudo.size;
+        sudo.sudoku[row][col] = puzzle.sudoku[row][col];
     }
     return sudo;
 }
