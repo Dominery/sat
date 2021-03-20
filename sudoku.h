@@ -4,7 +4,7 @@
 #include "DPLLSolver.h"
 #ifndef SUDOKU_H
 #define SUDOKU_H
-#define ENCODE_CELL(i,j,n) (i*n+j+1)
+#define ENCODE_CELL(i,j,n) ((i)*(n)+j+1) // bug here
 struct Sudoku
 {
     // -1 represent unknown
@@ -22,7 +22,7 @@ struct Sudoku
     ~Sudoku(){
     };
     void init(){
-        for(auto row:sudoku){
+        for(auto &row:sudoku){
             for(int i=0;i<size;++i){
                 row[i]=-1;
             }

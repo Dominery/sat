@@ -76,6 +76,7 @@ int DPLLSolver::choose_literal(int pos){
             return i;
         }
     }
+    return 0;
 }
 
 Status DPLLSolver::transform_clauses(int literal){
@@ -88,7 +89,9 @@ Status DPLLSolver::transform_clauses(int literal){
                 if(info.clauses_num==0)return SATISFIABLE;
             }else if(literal == formula.clauses[i][lit]/2){
                 info.clause_literals_num[i]--;
-                if(info.clause_literals_num[i]==0)return UNSATISFIABLE;
+                if(info.clause_literals_num[i]==0){
+                    return UNSATISFIABLE;
+                }
             }
         }
     }

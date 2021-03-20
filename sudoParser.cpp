@@ -9,7 +9,7 @@ vector<vector<int>> dfs(vector<int>,int);
 Formula SudoParser::parse(Sudoku&sudo){
     sudoku = sudo;
     dim = sudo.size;
-    int num = pow(sudoku.size,2)*(sudoku.size-1)*3 + pow(sudoku.size,2);
+    int num = pow(sudoku.size,2)*(sudoku.size-1)*2 + pow(sudoku.size,2);
     Formula formula(num);
 
     rule_0(formula);
@@ -64,39 +64,34 @@ void SudoParser::rule_3(Formula&formula){
            for(int j=0;j<dim;++j){
                rule_3_helper({ENCODE_CELL(i,j,dim),ENCODE_CELL(k,j,dim),++count},formula);
                rule_3_helper({-ENCODE_CELL(i,j,dim),-ENCODE_CELL(k,j,dim),++count},formula);
-               ++count;
-               rule_3_helper({-(count-2),-(count-1),-count},formula);
            }
-           vector<int> lits;int temp = count;
-           for(int i=0;i<dim;++i,temp-=3){
-               lits.push_back(temp);
-           }
-           formula.add_clause(lits);
         }
     }
 
     for(int j=0;j<dim;j++){
         for(int k=j+1;k<dim;k++){
            for(int i=0;i<dim;++i){
-               rule_3_helper({ENCODE_CELL(i,j,dim),ENCODE_CELL(k,j,dim),++count},formula);
-               rule_3_helper({-ENCODE_CELL(i,j,dim),-ENCODE_CELL(k,j,dim),++count},formula);
-                ++count;
-               rule_3_helper({-(count-2),-(count-1),-count},formula);
+               rule_3_helper({ENCODE_CELL(i,k,dim),ENCODE_CELL(i,j,dim),++count},formula);
+               rule_3_helper({-ENCODE_CELL(i,k,dim),-ENCODE_CELL(i,j,dim),++count},formula);
            }
-            vector<int> lits;int temp = count;
-           for(int i=0;i<dim;++i,temp-=3){
-               lits.push_back(temp);
-           }
-           formula.add_clause(lits);
+        }
+    }
+
+    vector<int> cl;
+    for(int temp=dim*dim+1;temp<=count;++temp){
+        cl.push_back(temp);
+        if((temp-dim*dim)%(2*dim)==0){
+            formula.add_clause(cl);
+            cl.clear();
         }
     }
 
 }
 
 void SudoParser::rule_3_helper(vector<int>lits,Formula&formula){
-    formula.add_clause({lits[0],-lits[2]});
-    formula.add_clause({lits[1],-lits[2]});
-    formula.add_clause({-lits[0],-lits[1],lits[2]});
+    formula.add_clause({-lits[2],-lits[0]});
+    formula.add_clause({-lits[2],lits[1]});
+    formula.add_clause({lits[2],lits[0],-lits[1]});
 }
 
 void SudoParser::rule_2(Formula&formula){
@@ -118,16 +113,20 @@ void SudoParser::rule_2(Formula&formula){
                 l = -l;
             }
             formula.add_clause(lit);
-            // process column
-            lit = comb;
+        }
+    }
+    for(int j=0;j<dim;++j){
+        for(auto comb:combs){
+             // process row
+            auto lit = comb;
             for(auto &l:lit){
-                l = ENCODE_CELL(l,i,dim);
+                l = ENCODE_CELL(l,j,dim);
             }
             formula.add_clause(lit);
             for(auto &l:lit){
                 l = -l;
             }
-            formula.add_clause(lit);
+            formula.add_clause(lit);           
         }
     }
 }

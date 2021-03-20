@@ -31,7 +31,10 @@ bool PuzzleGenerator::las_vegas(int n,Sudoku& sudo){
         sudo.sudoku[row][col] = rand()%2;
     }
     Formula formula = parser_.parse(sudo);
-
+    // ofstream os("test.cnf");
+    // CnfFileFormatter().format(formula,os);
+    // os.close();
+    // return true;
     SolveResult result= solver_.get_result(formula);
     if (result.status==SATISFIABLE){ 
         puzzle = parser_.format(result);
@@ -45,7 +48,7 @@ Sudoku PuzzleGenerator::generate(int dim){
     if(dim%2||dim<5)throw IOException("warning","unsupported dim:"+dim);
     Sudoku sudo(dim);
     srand(time(NULL));
-    while (!las_vegas(dim*dim/6,sudo))
+    while (!las_vegas(pow(dim-2,2)/3,sudo))
     {
         sudo.init();
     }
