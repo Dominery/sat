@@ -29,6 +29,14 @@ struct Sudoku
             }
         }
     }
+    bool is_unsure(){
+        for(auto row:sudoku){
+            for(auto i:row){
+                if(i==-1)return true;
+            }
+        }
+        return false;
+    }
     void display(std::ostream&os){
         for(auto row:sudoku){
             for(int i=0;i<size;++i){

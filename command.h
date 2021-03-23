@@ -5,6 +5,7 @@
 #include "resultFormatter.h"
 #include "cnfFileFormatter.h"
 #include "sudoku.h"
+#include "DPLLSolver.h"
 #ifndef COMAND_H
 #define COMAND_H
 
@@ -12,6 +13,7 @@
 struct CommandInfo{
     Formula formula;
     std::string filename;
+    SolveResult result;
     ~CommandInfo(){
         if(formula.literal_polarity!=nullptr)delete formula.literal_polarity;
     };
@@ -59,6 +61,7 @@ class ExitCommand:public Command{
 class GenerateSudoCommand:public Command{
     private:
     PuzzleGenerator generator;
+    void play_sudo(Sudoku&sudo,Sudoku&puzzle);
     public:
     virtual int execute(CommandInfo&);
 };
@@ -68,6 +71,12 @@ class SolveSudoCommand:public Command{
     virtual int execute(CommandInfo&);
 };
 
+class ValidateCommand:public Command{
+    private:
+    ResultFormatter formatter;
+    public:
+    virtual int execute(CommandInfo&);
+};
 
 void show_processing(bool &running,std::vector<std::string>&words);
 #endif

@@ -18,7 +18,7 @@ using namespace std;
 void Display::show_sat(){
     cout<<"\tSAT Solver"<<endl;
     cout<<"1.read file\t2.show formula"<<endl;
-    cout<<"3.solve the formula \t0.back"<<endl;
+    cout<<"3.solve the formula\t4.validate the answer\t0.back"<<endl;
 }
 
 void Display::run_sat_menu(InputHandler&input_handler){
@@ -27,6 +27,7 @@ void Display::run_sat_menu(InputHandler&input_handler){
     input_handler.add_command(1,new ParseFileCommand());
     input_handler.add_command(2,new ShowFormulaCommand());
     input_handler.add_command(3,new SolveFormulaCommand());
+    input_handler.add_command(4,new ValidateCommand());
     Command * command=nullptr;
     bool running = true;
 
