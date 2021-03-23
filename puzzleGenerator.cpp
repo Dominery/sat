@@ -17,10 +17,10 @@ using namespace std;
 bool PuzzleGenerator::las_vegas(int n,Sudoku& sudo){
     set<int> random_init;
     int num = sudo.size * sudo.size;
-    // for(int i=0;i<sudo.size;++i){
-    //     random_init.insert(i*(sudo.size+1));
-    //     random_init.insert((i+1)*(sudo.size-1));
-    // }
+    for(int i=0;i<sudo.size;++i){
+        random_init.insert(i*(sudo.size+1));
+        random_init.insert((i+1)*(sudo.size-1));
+    }
     random_choose(n,num,random_init);
     for(auto i=random_init.begin();i!=random_init.end();++i){
         int row = *i/sudo.size;

@@ -12,16 +12,14 @@
 
 using namespace std;
 
-void show_processing(bool &running){
+void show_processing(bool &running,vector<string>&words){
     string mark = "\\|/-";
-    vector<string> words{"I'm trying hard to solve it ","Maybe you can watch TV first","I feel the answer is coming!","Trust me!Don't shut me down!"};
     int count = 0;
     while(running){
-        cout<<mark.at(count%4)<<words[count/5%4]<<"\r";
+        cout<<mark.at(count%4)<<words[count/5%words.size()]<<"\r";
         count++;
         Sleep(200);
     }
-    cout<<"I have completed the task, took a look: \r"<<endl;
 }
 
 int ParseFileCommand::execute(CommandInfo&info){
@@ -46,7 +44,9 @@ int ShowFormulaCommand::execute(CommandInfo&info){
     if(info.formula.not_init()){
         cout<<"please input file first"<<endl;
     }else{
+        int i=0;
         for(auto clause:info.formula.clauses){
+            if(i++>20)break;
             for(auto literal:clause){
                 cout<<DECODE(literal)<<"\t";
             }
@@ -63,11 +63,13 @@ SolveResult SolveFormulaCommand::solve_process(Formula &formula){
     cout<<"please input file first"<<endl;
     }else{
         bool running = true;
-        thread task(show_processing,std::ref(running)); //create a thread for showing process
+        vector<string> words{"I'm trying hard to solve it ","Maybe you can watch TV first","I feel the answer is coming!","Trust me!Don't shut me down!"};
+        thread task(show_processing,std::ref(running),std::ref(words)); //create a thread for showing process
         task.detach();
         result = DPLLSolver().get_result(formula);
         running = false;
         Sleep(400); // wait the show_running thread completing the cout
+        cout<<"I have completed the task, took a look: \r"<<endl;
     }
     return result;
 }
@@ -108,7 +110,13 @@ int GenerateSudoCommand::execute(CommandInfo&info){
     cout<<"input the dim :";
     int dim = InputHandler::get_command();
     try{
+        vector<string> words = {"one more second  ","it will come soon","I'm trying hard  "};
+        bool running = true;
+        thread task(show_processing,std::ref(running),std::ref(words));
+        task.detach();
         Sudoku sudo= generator.generate(dim);
+        running = false;
+        Sleep(400);
         Sudoku answer = generator.get_answer();
         sudo.display(cout);
         cout<<"press any key to see answer"<<endl;

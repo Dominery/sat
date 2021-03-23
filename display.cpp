@@ -1,6 +1,9 @@
 #include <iostream>
 #include <windows.h>
 #include <string>
+#include <thread>
+#include <mmsystem.h>
+#pragma comment(lib,"winmm.lib")
 
 #include "display.h"
 #include "inputHandler.h"
@@ -92,4 +95,11 @@ void Display::run_main_menu(){
 Display::Display(){
     system("COLOR 97");
     SetConsoleTitle(TEXT("SAT And Sudo"));
+    PlaySound(TEXT("src/hopper.wav"), NULL, SND_FILENAME | SND_ASYNC|SND_LOOP);
+    vector<string> words = {"loading music please wait"};
+    bool running = true;
+    thread task(show_processing,std::ref(running),std::ref(words));
+    task.detach();
+    Sleep(1000);
+    running = false;
 }

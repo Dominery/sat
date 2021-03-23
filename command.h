@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 #include "DPLLSolver.h"
 #include "formula.h"
 #include "resultFormatter.h"
@@ -67,4 +68,6 @@ class SolveSudoCommand:public Command{
     virtual int execute(CommandInfo&);
 };
 
+
+void show_processing(bool &running,std::vector<std::string>&words);
 #endif
