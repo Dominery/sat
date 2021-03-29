@@ -21,7 +21,7 @@ bool PuzzleGenerator::las_vegas(int n,Sudoku& sudo){
         random_init.insert(i*(sudo.size+1));
         random_init.insert((i+1)*(sudo.size-1));
     }
-    random_choose(n,num,random_init);
+    random_choose(n,sudo.size,random_init);
     for(auto i=random_init.begin();i!=random_init.end();++i){
         int row = *i/sudo.size;
         int col = *i%sudo.size;
@@ -49,12 +49,12 @@ Sudoku PuzzleGenerator::generate(int dim){
     {
         sudo.init();
     }
-    return dig(dim*(dim-1));
+    return dig(dim*(dim-2));
 }
 
 
 void PuzzleGenerator::random_choose(int n,int num,set<int>&choices){
-    while (choices.size()!=n)
+    while (choices.size()<n)
     {
         int value = rand()%num;
         auto index = choices.find(value);
