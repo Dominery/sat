@@ -21,7 +21,7 @@ bool PuzzleGenerator::las_vegas(int n,Sudoku& sudo){
         random_init.insert(i*(sudo.size+1));
         random_init.insert((i+1)*(sudo.size-1));
     }
-    random_choose(n,sudo.size,random_init);
+    random_choose(n,num,random_init);
     for(auto i=random_init.begin();i!=random_init.end();++i){
         int row = *i/sudo.size;
         int col = *i%sudo.size;
@@ -42,7 +42,7 @@ bool PuzzleGenerator::las_vegas(int n,Sudoku& sudo){
 }
 
 Sudoku PuzzleGenerator::generate(int dim){
-    if(dim%2||dim<5)throw IOException("warning","unsupported dim:"+dim);
+    if(dim%2||dim<3)throw IOException("warning","unsupported dim:"+dim);
     Sudoku sudo(dim);
     srand(time(NULL));
     while (!las_vegas(pow(dim-2,2)/3,sudo))

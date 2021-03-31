@@ -80,6 +80,7 @@ int DPLLSolver::choose_literal(int pos){
 }
 
 Status DPLLSolver::transform_clauses(int literal){
+    if(info.clauses_num==0)return SATISFIABLE;
     int value_of_literal = literals[literal]; // 0 true;1 false
     for(auto i:formula.literals_position[literal]){
         for(int lit=0;lit<formula.clauses[i].size()&&info.clause_literals_num[i];lit++){
