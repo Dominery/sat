@@ -6,22 +6,22 @@ There are two exe application in the directory which contains this file. One is 
 
 2. then it will show the interface like this:
 
-   ![](src\interface.png)
+   ![](/src/interface.png)
 
 3. now decide which module you want to use
 
 4. if you choose sat, there are four choices in the new interface:
 
-   ![](src\satinterface.png)
+   ![](/src/satinterface.png)
 
 5. then input command which you need
 
 6. if you choose sudoku in step 4 the new interface will look like this:
 
-   ![](src\sudointerface.png)
+   ![](/src/sudointerface.png)
 
 7. if you input the generate command, it will ask you to input the dim of puzzle, only even number greater than 4 is allowed.After this, the programe will run for generating a puzzle for you. 
 
-   ![](src\sudogenerate.png)
+   ![](/src/sudogenerate.png)
 
 8. You can input the value of unsure position ,the programe will judge whether your anwer is right.
