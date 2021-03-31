@@ -29,6 +29,8 @@ private:
     // store another choice
     std::stack<FormulaInfo> info_stack;
     // store the result of every literals
+    // a vector that stores the value assigned to each variable, where
+    // -1 unassigned 0 true 1 false
     std::vector<int> literals;
     //store the first formula
     Formula formula;

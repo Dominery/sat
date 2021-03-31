@@ -66,7 +66,7 @@ Formula CnfFileFormatter::parse(ifstream&fin){
 
 void CnfFileFormatter::format(Formula&formula,ostream&os){
     // output the info of formula
-    os<<"p cnf "<<formula.literals.size()<<" "<<formula.clauses.size()<<"\n"; 
+    os<<"p cnf "<<formula.literals_position.size()<<" "<<formula.clauses.size()<<"\n"; 
     
     for(auto clause:formula.clauses){
         for(auto lit:clause){

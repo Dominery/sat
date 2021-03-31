@@ -25,11 +25,6 @@ struct FormulaInfo
     clauses_num(cl_num),clause_literals_num(cl_lit_num),literal_frequency(lit_fre){}
 };
 struct Formula{
-    // a vector that stores the value assigned to each variable, where
-    // -1 unassigned
-    // 0 true
-    // 1 false
-    std::vector<int> literals;
     FormulaInfo info;
     // store index of clauses that the same literal in
     std::vector<std::list<int>> literals_position;
@@ -37,11 +32,9 @@ struct Formula{
     // contain clauses
     std::vector<clause> clauses;
     Formula(){
-        literals.clear();
         clauses.clear();
     };
     Formula(int lit_num){
-        literals = std::vector<int>(lit_num,-1);
         info.literal_frequency = std::vector<int>(lit_num,0);
         literals_position = std::vector<std::list<int>>(lit_num);
         literal_polarity = new int[lit_num];
