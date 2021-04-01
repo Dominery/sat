@@ -14,8 +14,10 @@ void Sat::handleInput(Input input){
         delete state_;
         state_ = new_state;
         update();
+        cout<<"execute command successfully"<<endl;
         return;
     }
+    cout<<"please press permitted command"<<endl;
 }
 
 SatState* ReadFileState::handleInput(Input input){
