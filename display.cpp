@@ -12,36 +12,28 @@
 #include "sudoku.h"
 #include "cnfFileFormatter.h"
 #include "DPLLSolver.h"
+#include "satState.h"
 
 using namespace std;
 
 void Display::show_sat(){
     cout<<"\tSAT Solver"<<endl;
     cout<<"1.read file\t2.show formula"<<endl;
-    cout<<"3.solve the formula\t4.validate the answer\t0.back"<<endl;
+    cout<<"3.solve the formula\t4.validate the answer"<<endl;
+    cout<<"5.store the result\t0.back"<<endl;
 }
 
 void Display::run_sat_menu(InputHandler&input_handler){
-    CommandInfo info;
-    input_handler.add_command(0,new ExitCommand());
-    input_handler.add_command(1,new ParseFileCommand());
-    input_handler.add_command(2,new ShowFormulaCommand());
-    input_handler.add_command(3,new SolveFormulaCommand());
-    input_handler.add_command(4,new ValidateCommand());
-    Command * command=nullptr;
-    bool running = true;
+    Sat sat;
 
-    while(running){
+    while(true){
         system("cls");
         show_sat();
-        command = input_handler.handle_input();
-        if(command!=nullptr){
-            int mark = command->execute(info);
-            if(mark==0)running=false;
-        }
+        int input = input_handler.get_command();
+        if(input==0)break;
+        sat.handleInput((Input)input);
         system("pause");
     }
-    input_handler.clear();
 }
 
 void Display::run_sudo_menu(InputHandler&input_handler){
